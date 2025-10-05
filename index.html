@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SpellCaster — 8‑bit Gesture Game (UI Only)</title>
+    <!-- If you want the arcade font, you can add Google Fonts: -->
+    <!-- <link rel="preconnect" href="https://fonts.googleapis.com"> -->
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"> -->
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="shell hidden" id="gameUI">
+      <!-- HUD -->
+      <header class="hud">
+        <div class="meters">
+          <div class="meter panel" aria-label="health">
+            <div class="fill" style="width: 76%"></div>
+            <div class="label">HP</div>
+          </div>
+          <div class="meter mana panel" aria-label="mana">
+            <div class="fill" style="width: 58%"></div>
+            <div class="label">MP</div>
+          </div>
+        </div>
+        <div class="status">
+          <div class="chip">Zone: <span id="zone">1-1</span></div>
+          <div class="chip">Score: <span id="score">000120</span></div>
+          <div class="chip">FPS: <span id="fps">60</span></div>
+        </div>
+      </header>
+
+      <!-- MAIN -->
+      <section class="main">
+        <div class="viewport-wrap panel pixel-border">
+          <div
+            id="viewport"
+            class="viewport"
+            role="img"
+            aria-label="Game viewport placeholder"
+          >
+            <span class="muted">GAME VIEW (placeholder)</span>
+            <!-- Placeholder sprites you will swap with your own -->
+            <div class="sprite" style="left: 20%; bottom: 18%"></div>
+            <div class="sprite enemy" style="left: 62%; bottom: 26%"></div>
+            <canvas id="gestureCanvas"></canvas>
+          </div>
+          <div class="spellbar">
+            <div class="slot panel">
+              <span class="key">1</span> <span>Circle → Water</span>
+            </div>
+            <div class="slot panel">
+              <span class="key">2</span> <span>Triangle → Fire</span>
+            </div>
+            <div class="slot panel">
+              <span class="key">3</span> <span>Square → Earth</span>
+            </div>
+            <div class="slot panel">
+              <span class="key">4</span> <span>Line → Wind</span>
+            </div>
+            <div class="slot panel">
+              <span class="key">5</span> <span>Star → Arcane</span>
+            </div>
+            <div class="slot panel">
+              <span class="key">6</span> <span>Custom</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+          <div class="card panel">
+            <h3>Quest</h3>
+            <p>
+              Draw the <strong>Circle</strong> to channel the
+              <strong>Water Beam</strong>. Defeat 3 foes.
+            </p>
+            <p class="hint">Hint: Keep your gesture smooth. Speed matters!</p>
+          </div>
+          <div class="card panel">
+            <h3>Battle Log</h3>
+            <div class="log" id="log">
+              <p>[00:01] Entered Ruins.</p>
+              <p>[00:06] Triangle recognized → Fireball armed.</p>
+              <p>[00:07] Fireball cast! 30 dmg.</p>
+            </div>
+          </div>
+          <div class="card panel">
+            <h3>Controls</h3>
+            <div class="btns">
+              <button class="btn" id="btnStart">Start</button>
+              <button class="btn" id="btnPause">Pause</button>
+              <button class="btn" id="btnClear">Clear Gesture</button>
+              <button class="btn" id="btnOverlay">How to Play</button>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <!-- FOOTER / help -->
+      <footer>
+        <div class="kbd">Draw on: <strong>Canvas Overlay</strong></div>
+        <div class="kbd">Keys: 1‑6 swap spells • D = Debug • H = Help</div>
+      </footer>
+    </div>
+
+    <!-- Overlays -->
+    <div id="helpOverlay" class="overlay">
+      <div class="modal panel">
+        <div class="title">How to Play</div>
+        <p>
+          Draw a <strong>shape</strong> on the screen with your hand (coming
+          later) or mouse (for testing). The game will match it and cast the
+          linked spell.
+        </p>
+        <ul>
+          <li>Circle → Water Beam</li>
+          <li>Triangle → Fireball</li>
+          <li>Square → Earth Shield</li>
+          <li>Line → Wind Slash</li>
+        </ul>
+        <p class="muted">
+          This is a <em>UI‑only</em> mock. Plug your landmark + gesture code
+          where noted in the JS.
+        </p>
+        <div class="btns" style="margin-top: 12px">
+          <button class="btn" id="btnCloseHelp">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Debug Panel -->
+    <div id="debug" class="debug" hidden>
+      <div>Canvas: <span id="dbgSize">—</span></div>
+      <div>Last gesture: <span id="dbgGesture">none</span></div>
+    </div>
+
+    <script defer src="app.js"></script>
+  </body>
+
+  <!-- ===== Main Menu Screen ===== -->
+  <div
+    id="mainMenu"
+    class="menu screen show"
+    role="dialog"
+    aria-label="Main Menu"
+  >
+    <div class="menu-inner">
+      <h1 class="game-title" aria-label="Larry Copper">LARRY COPPER</h1>
+      <p class="subtitle">Gesture Casting Adventure</p>
+
+      <div class="menu-btns">
+        <button class="btn big" id="btnMenuStart">Start Game</button>
+        <button class="btn" id="btnMenuHow">How to Play</button>
+      </div>
+
+      <p class="hint center">Press <span class="kbd">Enter</span> to start</p>
+    </div>
+    <div class="scanlines" aria-hidden="true"></div>
+  </div>
+</html>

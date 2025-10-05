@@ -1,0 +1,381 @@
+:root {
+  --bg: #0d0f1a; /* deep night */
+  --panel: #15192b; /* panel base */
+  --panel-2: #0f1330; /* darker panel */
+  --ink: #e5eeff; /* text */
+  --accent: #01d0ff; /* cyan */
+  --accent-2: #ff2e63; /* magenta */
+  --accent-3: #ffe066; /* gold */
+  --good: #33ff89; /* hp */
+  --mana: #6aa7ff; /* mana */
+  --warn: #ffb347; /* warm */
+  --danger: #ff5a5a; /* danger */
+  --grid: 8px; /* pixel scale */
+}
+
+/* Global reset + pixel look */
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  background: radial-gradient(
+      1200px 800px at 60% -10%,
+      #1a1f3a 0%,
+      var(--bg) 50%
+    )
+    fixed;
+  color: var(--ink);
+  font-family: "Press Start 2P", ui-monospace, Menlo, Monaco, Consolas,
+    monospace;
+  image-rendering: pixelated;
+  letter-spacing: 0.5px;
+}
+
+/* Layout */
+.shell {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: calc(var(--grid));
+  padding: calc(var(--grid) * 2);
+}
+
+.hud {
+  display: flex;
+  gap: calc(var(--grid) * 2);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.panel {
+  background: linear-gradient(180deg, var(--panel), var(--panel-2));
+  border: 4px solid #000;
+  box-shadow: 0 0 0 4px var(--ink) inset, 0 6px 0 0 #000,
+    0 10px 0 0 rgba(0, 0, 0, 0.5);
+  border-radius: 0; /* hard edges for 8-bit */
+}
+
+.pixel-border {
+  outline: 3px solid var(--ink);
+  box-shadow: 0 0 0 4px #000 inset;
+}
+
+/* HUD elements */
+.meters {
+  display: flex;
+  gap: calc(var(--grid) * 2);
+  align-items: center;
+}
+.meter {
+  width: 240px;
+  max-width: 34vw;
+  height: 20px;
+  border: 3px solid #000;
+  background: #111;
+  position: relative;
+}
+.meter .fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--good), #39e58f);
+  width: 70%;
+}
+.meter.mana .fill {
+  background: linear-gradient(90deg, #6aa7ff, #4e74ff);
+  width: 55%;
+}
+.meter .label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #000;
+  text-shadow: 0 1px 0 #fff6;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--grid));
+}
+.status .chip {
+  padding: 6px 10px;
+  background: #000;
+  border: 3px solid var(--ink);
+  color: var(--ink);
+  font-size: 12px;
+}
+
+/* Main grid */
+.main {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: calc(var(--grid) * 2);
+}
+
+@media (max-width: 1100px) {
+  .main {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    order: 2;
+  }
+}
+
+/* Viewport + canvas overlay */
+.viewport-wrap {
+  position: relative;
+}
+.viewport {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(0deg, #0a0d22 0%, #060816 100%),
+    repeating-linear-gradient(0deg, #0e1130 0 2px, #0b0e24 2px 4px);
+  border: 4px solid #000;
+  box-shadow: 0 0 0 4px var(--accent) inset, 0 0 40px #00e5ff33 inset;
+  position: relative;
+  overflow: hidden;
+}
+#gestureCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Placeholder sprite/NPC slots */
+.sprite {
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(180deg, #b0b7ff, #6aa7ff);
+  border: 4px solid #000;
+  box-shadow: 0 0 0 4px #fff inset;
+  image-rendering: pixelated;
+}
+.sprite.enemy {
+  background: linear-gradient(180deg, #ff9fb3, #ff5a5a);
+}
+
+/* Spell bar */
+.spellbar {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--grid);
+  padding: calc(var(--grid) * 1.5);
+}
+.slot {
+  height: 56px;
+  border: 4px solid #000;
+  background: #0c1026;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.slot::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 2px dashed #3b4c9d;
+}
+.slot .key {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: #000;
+  border: 2px solid var(--ink);
+  padding: 2px 4px;
+  font-size: 10px;
+}
+
+/* Sidebar: Quest/Log + Buttons */
+.sidebar {
+  display: grid;
+  gap: calc(var(--grid) * 2);
+}
+.card {
+  padding: calc(var(--grid) * 2);
+}
+.card h3 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: var(--accent-3);
+}
+.log {
+  font-size: 12px;
+  line-height: 1.4;
+  max-height: 30vh;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+.log p {
+  margin: 0 0 6px 0;
+}
+
+.btns {
+  display: flex;
+  gap: calc(var(--grid));
+  flex-wrap: wrap;
+}
+.btn {
+  background: linear-gradient(180deg, #1e2650, #10163a);
+  color: var(--ink);
+  border: 4px solid #000;
+  box-shadow: 0 0 0 4px var(--accent-2) inset, 0 6px 0 0 #000;
+  padding: 10px 14px;
+  text-transform: uppercase;
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+.btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 4px 0 0 #000;
+}
+
+/* Footer */
+footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--grid));
+  flex-wrap: wrap;
+}
+.kbd {
+  background: #000;
+  border: 3px solid var(--ink);
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+/* Overlays */
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: none;
+  place-items: center;
+  background: #000000aa;
+}
+.overlay .modal {
+  width: min(720px, 92vw);
+  padding: 24px;
+}
+.overlay.show {
+  display: grid;
+}
+.title {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+/* Tiny debug panel (toggle with D) */
+.debug {
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+  background: #000;
+  border: 3px solid var(--ink);
+  padding: 8px;
+  font-size: 10px;
+  opacity: 0.9;
+}
+
+/* Utility */
+.muted {
+  opacity: 0.8;
+}
+.center {
+  text-align: center;
+}
+.hint {
+  color: var(--warn);
+}
+
+/* ===== Main Menu Screen (8-bit style) ===== */
+.screen {
+  position: fixed;
+  inset: 0;
+  display: none;
+  z-index: 999;
+}
+.screen.show {
+  display: grid;
+  place-items: center;
+}
+.hidden {
+  display: none !important;
+}
+
+.menu {
+  background: radial-gradient(
+      1200px 800px at 50% -10%,
+      #1a1f3a 0%,
+      var(--bg) 50%
+    )
+    fixed;
+  color: var(--ink);
+}
+
+.menu-inner {
+  text-align: center;
+  padding: 24px;
+  background: linear-gradient(180deg, var(--panel), var(--panel-2));
+  border: 4px solid #000;
+  box-shadow: 0 0 0 4px var(--accent) inset, 0 12px 0 #000, 0 20px 40px #0008;
+  max-width: min(720px, 92vw);
+}
+
+.game-title {
+  font-size: clamp(26px, 6vw, 56px);
+  letter-spacing: 2px;
+  margin: 0 0 12px 0;
+  text-shadow: 0 0 8px #00e5ff55, 0 0 2px #000;
+}
+
+.subtitle {
+  margin: 0 0 18px 0;
+  color: var(--accent-3);
+  font-size: clamp(12px, 2.4vw, 14px);
+}
+
+.menu-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 10px 0 6px;
+}
+
+.btn.big {
+  padding: 14px 18px;
+  font-size: 14px;
+  box-shadow: 0 0 0 4px var(--accent) inset, 0 6px 0 0 #000;
+}
+
+.scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, #0000 0 2px, #0003 2px 3px);
+  pointer-events: none;
+  opacity: 0.25;
+  mix-blend-mode: soft-light;
+}
+
+/* Optional sprite sheet animation helper (pure CSS) */
+/*
+.wiz{ width:64px; height:64px; background:url(assets/wizard.png) no-repeat 0 0 / auto 64px; }
+.walk{ animation: walk 0.8s steps(8) infinite; }
+@keyframes walk{ from{ background-position:0 0 } to{ background-position:-512px 0 } }
+*/
